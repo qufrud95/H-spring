@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans https://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.3.xsd
+		http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-4.3.xsd">
+	
+	<!-- Root Context: defines shared resources visible to all other web components -->
+	<bean 
+		id="dataSource"	class="com.zaxxer.hikari.HikariDataSource">
+		<property name="username" value="" />
+		<property name="password" value="" />
+		<property name="jdbcUrl"  
+		value="jdbc:log4jdbc:oracle:thin:@edudb_high?TNS_ADMIN=/Users/chagyeongjun/eclipse-workspace/Wallet_EDUDB" />
+		<property name="driverClassName" value="net.sf.log4jdbc.DriverSpy" />
+		<property name="maximumPoolSize" value="20" />
+	</bean>
+	
+	<bean id="boardSqlSession" class="org.mybatis.spring.SqlSessionFactoryBean">
+		<property name="dataSource" ref="dataSource" />
+		<property name="typeAliasesPackage" value="net.developia.project.dto" />
+	</bean>
+	
+	<bean id="boardDAO" class="org.mybatis.spring.mapper.MapperFactoryBean">
+		<property name="sqlSessionFactory" ref="boardSqlSession" />
+		<property name="mapperInterface" value="net.developia.project.dao.BoardDAO" />
+	</bean>
+	
+	<!-- 실제 쿼리를 수행하기 위한 Bean -->      
+	<bean id="autocompleteSqlSession" class="org.mybatis.spring.SqlSessionFactoryBean">
+		<property name="dataSource" ref="dataSource" />
+		<property name="typeAliasesPackage" value="net.developia.project.dto" />
+	</bean>
+	<!-- typeAliasesPackage 에서 value에 패키지를 여러개 두고 싶다면 , 하고 계속 써주면 됨 -->
+	
+	<!-- IMsDAO 인테페이스의 구현체를 만드는 Bean -->	
+	<bean id="autocompleteDAO" class="org.mybatis.spring.mapper.MapperFactoryBean">
+		<property name="sqlSessionFactory" ref="autocompleteSqlSession" />
+		<property name="mapperInterface" value="net.developia.project.dao.AutocompleteDAO" />
+	</bean>
+	
+	
+	<bean id="replySqlSession" class="org.mybatis.spring.SqlSessionFactoryBean">
+		<property name="dataSource" ref="dataSource" />
+		<property name="typeAliasesPackage" value="net.developia.project.dto" />
+	</bean>
+	<!-- typeAliasesPackage 에서 value에 패키지를 여러개 두고 싶다면 , 하고 계속 써주면 됨 -->
+	
+	<!-- IMsDAO 인테페이스의 구현체를 만드는 Bean -->	
+	<bean id="replyDAO" class="org.mybatis.spring.mapper.MapperFactoryBean">
+		<property name="sqlSessionFactory" ref="replySqlSession" />
+		<property name="mapperInterface" value="net.developia.project.dao.ReplyDAO" />
+	</bean>
+		
+	
+	
+	
+
+	
+</beans>

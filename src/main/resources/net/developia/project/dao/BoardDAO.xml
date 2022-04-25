@@ -1,0 +1,127 @@
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+		"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="net.developia.project.dao.BoardDAO">
+
+	<select id="selectSearchList" parameterType="BoardDTO" resultType="BoardDTO">
+		SELECT * FROM board
+		<choose>
+			<when test="type !=null and type.equals('title')">
+			where title LIKE '%' ||#{keyword}||'%'
+			 </when>
+			 <when test="type !=null and type.equals('content')">
+			where content LIKE '%' ||#{keyword}||'%'
+			 </when>
+			 <when test="type !=null and type.equals('name')">
+			where name LIKE '%' ||#{keyword}||'%'
+			 </when>	
+		</choose>			
+	</select>
+
+
+
+	<insert id="insertBoard" parameterType="BoardDTO">
+	INSERT INTO board(no, title, name, password, content,filename)
+	VALUES(board_no_seq.nextval, #{title}, #{name}, #{password}, #{content} ,#{filename,jdbcType=VARCHAR})
+	</insert>
+	
+	<select id="getBoardList" resultType="BoardDTO">
+	SELECT
+	    NO,
+	    title,
+	    NAME,
+	    regdate,
+	    readcount
+	FROM
+	    board
+	ORDER BY NO DESC
+	</select>
+	
+	<select id="getDetail" parameterType="long" resultType="BoardDTO">
+	SELECT
+	    NO,
+	    title,
+	    NAME,
+	    CONTENT,
+	    regdate,
+	    readcount,
+	    filename
+	FROM
+	    board
+	WHERE
+		no = #{no}
+	</select>
+	
+	
+	<update id ="updateReadcount" parameterType="long">
+	
+	update board
+	set
+	readcount = readcount + 1
+	where no = #{no}
+	
+	</update>
+	
+	<delete id = "deleteBoard" parameterType="BoardDTO">
+	DELETE board
+	WHERE no = #{no} AND password = #{password}
+	
+	
+	</delete>
+	
+	<update id ="updateBoard" parameterType="BoardDTO">
+	
+	UPDATE board
+	set
+	title  = #{title},
+	name = #{name},
+	content = #{content}
+	where password = #{password} AND no = #{no}
+	
+	</update>
+	<!-- 
+	<select id  = "getTotal" resultType="int">
+		select count(*) from board
+	
+	
+	</select>
+	
+	
+	 <select id="getListPaging" resultType="BoardDTO">
+    
+    <![CDATA[
+        
+        select no,title,namem,content,regdate,readcount,password  from(
+        
+                select /*+INDEX_DESC(oard pk_board) */ rownum  as no,title,namem,content,regdate,readcount,password
+                  
+                from board where rownum <= #{pageNum} * #{amount}) 
+                
+        where no > (#{pageNum} -1) * #{amount}
+    
+    ]]>
+    
+    </select>
+     -->
+    
+    
+   <select id="getBoardListPage" parameterType="long" resultType="BoardDTO">
+	SELECT B.*
+	FROM (SELECT  rownum AS rnum, A.*
+	      FROM	(SELECT no, title, name, regdate, readcount
+		         FROM   board
+	             ORDER  BY no DESC) A) B
+	WHERE rnum BETWEEN #{startNum} AND #{endNum}
+	</select>
+    
+    
+    <select id ="getBoardCount" resultType="long">
+    
+    select count(*) as cnt
+    from board
+    
+    
+    
+    </select>
+ 
+ 		
+</mapper>
